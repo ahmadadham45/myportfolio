@@ -11,7 +11,8 @@ import 'screens/training_screen.dart';
 import 'screens/elearning_screen.dart';
 import 'screens/cpd_screen.dart';
 import 'screens/forum_screen.dart';
-import 'screens/register_screen.dart';// Added RegisterScreen import
+import 'screens/register_screen.dart';
+import 'screens/resume_builder_screen.dart';
 // TODO: Import the rest of the screens (profile_screen.dart, cpd_screen.dart, etc.) as we build them
 
 // -----------------------------------------------------------------------------
@@ -69,6 +70,7 @@ class MyPortfolioApp extends StatelessWidget {
         '/cpd': (context) => const CpdScreen(),
         '/forum': (context) => const ForumScreen(),
         '/register': (context) => const RegisterScreen(), // Added RegisterScreen route
+        '/resume': (context) => const ResumeBuilderScreen(), // Added ResumeBuilderScreen route
       },
     );
   }        

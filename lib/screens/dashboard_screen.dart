@@ -55,7 +55,7 @@ class DashboardScreen extends StatelessWidget {
                       height: 260,
                       width: double.infinity,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFD31A21), // Matching the vibrant mockup red
+                        color: Color(0xFFD31A21), 
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(30),
                           bottomRight: Radius.circular(30),
@@ -68,16 +68,21 @@ class DashboardScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Mockup Logo & Title
+                              // Logo & Title
                               Row(
                                 children: [
+                                  // APP LOGO BESIDE HEADER TITLE
                                   Container(
-                                    padding: const EdgeInsets.all(4),
+                                    width: 32,
+                                    height: 32,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Colors.white, width: 1.5),
+                                      image: const DecorationImage(
+                                        image: AssetImage('assets/appLogo.jpg'),
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                    child: const Icon(Icons.workspace_premium, color: Colors.white, size: 20),
                                   ),
                                   const SizedBox(width: 10),
                                   Column(
@@ -96,7 +101,7 @@ class DashboardScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              // Notification & Edit/Logout Actions
+                              // Notification & Logout Actions
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -116,17 +121,13 @@ class DashboardScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 15),
                                   GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const EditProfileScreen()));
+                                    onTap: () async {
+                                      await FirebaseAuth.instance.signOut();
+                                      if (context.mounted) {
+                                        Navigator.pushReplacementNamed(context, '/');
+                                      }
                                     },
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: const [
-                                        Icon(Icons.login_outlined, color: Colors.white, size: 24), // Using login icon to mimic mockup
-                                        SizedBox(height: 2),
-                                        Text('Login', style: TextStyle(color: Colors.white, fontSize: 10)),
-                                      ],
-                                    ),
+                                    child: const Icon(Icons.logout, color: Colors.white, size: 28),
                                   ),
                                 ],
                               )
@@ -136,80 +137,86 @@ class DashboardScreen extends StatelessWidget {
                       ),
                     ),
                     
-                    // The Overlapping Profile Card matching mockup layout
+                    // The Overlapping Profile Card (Now acts as a button)
                     Positioned(
                       top: 100,
                       left: 20,
                       right: 20,
-                      child: Card(
-                        elevation: 8,
-                        shadowColor: Colors.black.withOpacity(0.1),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  // Profile Picture Placeholder
-                                  Container(
-                                    width: 70,
-                                    height: 70,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.grey[200],
-                                      image: const DecorationImage(
-                                        image: AssetImage('assets/appLogo.jpg'), // Placeholder until you add actual user images
-                                        fit: BoxFit.cover,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                          );
+                        },
+                        child: Card(
+                          elevation: 8,
+                          shadowColor: Colors.black.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // GENERIC PROFESSIONAL USER AVATAR
+                                    Container(
+                                      width: 70,
+                                      height: 70,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.grey[300],
+                                      ),
+                                      child: const Icon(Icons.person, size: 45, color: Colors.white),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Hello,', 
+                                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            name, 
+                                            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.black87),
+                                            maxLines: 1, 
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            role, 
+                                            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Hello,', 
-                                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          name, 
-                                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black87),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          role, 
-                                          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              // Premium Member Badge
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD31A21),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: const [
-                                    Icon(Icons.workspace_premium, color: Colors.white, size: 16),
-                                    SizedBox(width: 6),
-                                    Text('Premium Member', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                                   ],
                                 ),
-                              )
-                            ],
+                                const SizedBox(height: 16),
+                                // Premium Member Badge
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFD31A21),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      Icon(Icons.workspace_premium, color: Colors.white, size: 16),
+                                      SizedBox(width: 6),
+                                      Text('Premium Member', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -260,7 +267,7 @@ class DashboardScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           _buildMockupAction(context, Icons.stars, 'CPD Records', '/cpd'),
-                          _buildMockupAction(context, Icons.document_scanner, 'Resume Builder AI', ''),
+                          _buildMockupAction(context, Icons.document_scanner, 'Resume Builder AI', '/resume'),
                           _buildMockupAction(context, Icons.forum, 'Discussion Forum', '/forum'),
                         ],
                       ),
@@ -295,7 +302,9 @@ class DashboardScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/resume');
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFFD31A21),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -332,6 +341,66 @@ class DashboardScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+      
+      // ==========================================
+      // ADD THIS NEW BOTTOM NAVIGATION BAR BLOCK
+      // ==========================================
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5)),
+          ],
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFFD31A21),
+          unselectedItemColor: Colors.grey[500],
+          selectedFontSize: 11,
+          unselectedFontSize: 11,
+          currentIndex: 0, // 0 means 'Home' is currently highlighted
+          onTap: (index) {
+            // Map the taps to your newly registered routes
+            if (index == 1) Navigator.pushNamed(context, '/portfolio');
+            if (index == 2) Navigator.pushNamed(context, '/training');
+            if (index == 3) Navigator.pushNamed(context, '/resume');
+            if (index == 4) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const EditProfileScreen()));
+            }
+          },
+          items: [
+            const BottomNavigationBarItem(
+              icon: Padding(padding: EdgeInsets.only(bottom: 4), child: Icon(Icons.home, size: 24)), 
+              label: 'Home',
+            ),
+            const BottomNavigationBarItem(
+              icon: Padding(padding: EdgeInsets.only(bottom: 4), child: Icon(Icons.work_outline, size: 24)), 
+              label: 'Portfolio',
+            ),
+            const BottomNavigationBarItem(
+              icon: Padding(padding: EdgeInsets.only(bottom: 4), child: Icon(Icons.menu_book, size: 24)), 
+              label: 'Training',
+            ),
+            // Custom styling to mimic the prominent AI button from the mockup
+            BottomNavigationBarItem(
+              icon: Container(
+                margin: const EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFD31A21),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+              ),
+              label: 'AI Builder',
+            ),
+            const BottomNavigationBarItem(
+              icon: Padding(padding: EdgeInsets.only(bottom: 4), child: Icon(Icons.person_outline, size: 24)), 
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
     );
   }
