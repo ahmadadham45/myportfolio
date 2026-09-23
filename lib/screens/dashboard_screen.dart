@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'edit_profile_screen.dart';
 
 // -----------------------------------------------------------------------------
 // DASHBOARD SCREEN
@@ -22,7 +23,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFF9F9F9), // Very light grey/white background
       body: FutureBuilder<DocumentSnapshot>(
         future: _getUserProfile(),
         builder: (context, snapshot) {
@@ -37,49 +38,97 @@ class DashboardScreen extends StatelessWidget {
 
           var userData = snapshot.data!.data() as Map<String, dynamic>;
           String name = userData['name'] ?? 'Unknown User';
-          String role = userData['role'] ?? 'Student';
-          String studentId = userData['student_id'] ?? 'N/A';
-
+          String role = userData['role'] ?? 'Professional Portfolio Platform';
+          
           return SingleChildScrollView(
             child: Column(
               children: [
                 // ==========================================
-                // SECTION 1: TNG-INSPIRED HEADER & PROFILE CARD
+                // SECTION 1: HEADER & PROFILE CARD
                 // ==========================================
                 Stack(
                   clipBehavior: Clip.none,
                   alignment: Alignment.topCenter,
                   children: [
-                    // The Curved Red Background (Height increased)
+                    // Deep Red Header
                     Container(
                       height: 260,
                       width: double.infinity,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFC62828),
+                        color: Color(0xFFD31A21), // Matching the vibrant mockup red
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(35),
-                          bottomRight: Radius.circular(35),
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
                         ),
                       ),
                       child: SafeArea(
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 25.0, right: 15.0, top: 15.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Overview',
-                                style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+                              // Mockup Logo & Title
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 1.5),
+                                    ),
+                                    child: const Icon(Icons.workspace_premium, color: Colors.white, size: 20),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      Text(
+                                        'MyPortfolio',
+                                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        'Professional Portfolio Platform',
+                                        style: TextStyle(color: Colors.white70, fontSize: 10),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.logout, color: Colors.white, size: 28),
-                                onPressed: () async {
-                                  await FirebaseAuth.instance.signOut();
-                                  if (context.mounted) {
-                                    Navigator.pushReplacementNamed(context, '/');
-                                  }
-                                },
+                              // Notification & Edit/Logout Actions
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      const Icon(Icons.notifications_none, color: Colors.white, size: 28),
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(3),
+                                          decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle),
+                                          child: const Text('3', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(width: 15),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => const EditProfileScreen()));
+                                    },
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: const [
+                                        Icon(Icons.login_outlined, color: Colors.white, size: 24), // Using login icon to mimic mockup
+                                        SizedBox(height: 2),
+                                        Text('Login', style: TextStyle(color: Colors.white, fontSize: 10)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               )
                             ],
                           ),
@@ -87,48 +136,79 @@ class DashboardScreen extends StatelessWidget {
                       ),
                     ),
                     
-                    // The Overlapping Profile Card (Pushed down)
+                    // The Overlapping Profile Card matching mockup layout
                     Positioned(
-                      top: 140,
+                      top: 100,
                       left: 20,
                       right: 20,
                       child: Card(
                         elevation: 8,
-                        shadowColor: Colors.black26,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                        shadowColor: Colors.black.withOpacity(0.1),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         child: Padding(
-                          padding: const EdgeInsets.all(22.0),
-                          child: Row(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+                          child: Column(
                             children: [
-                              CircleAvatar(
-                                radius: 35,
-                                backgroundColor: Colors.grey[100],
-                                child: const Icon(Icons.person, size: 40, color: Color(0xFFC62828)),
+                              Row(
+                                children: [
+                                  // Profile Picture Placeholder
+                                  Container(
+                                    width: 70,
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.grey[200],
+                                      image: const DecorationImage(
+                                        image: AssetImage('assets/appLogo.jpg'), // Placeholder until you add actual user images
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Hello,', 
+                                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          name, 
+                                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black87),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          role, 
+                                          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      name, 
-                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      role, 
-                                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'ID: $studentId', 
-                                      style: TextStyle(fontSize: 13, color: Colors.grey[500], fontWeight: FontWeight.w600),
-                                    ),
+                              const SizedBox(height: 16),
+                              // Premium Member Badge
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFD31A21),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Icon(Icons.workspace_premium, color: Colors.white, size: 16),
+                                    SizedBox(width: 6),
+                                    Text('Premium Member', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
                                   ],
                                 ),
-                              ),
+                              )
                             ],
                           ),
                         ),
@@ -137,87 +217,116 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 ),
                 
-                const SizedBox(height: 100), // Adjusted spacing below the card
+                const SizedBox(height: 90), 
 
                 // ==========================================
-                // SECTION 2: QUICK ACTION GRID
+                // SECTION 2: QUICK ACTIONS (3x2 GRID)
                 // ==========================================
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Quick Actions', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Quick Actions', 
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                          ),
+                          Row(
+                            children: const [
+                              Text('Customise', style: TextStyle(color: Color(0xFFD31A21), fontSize: 13, fontWeight: FontWeight.bold)),
+                              SizedBox(width: 4),
+                              Icon(Icons.edit, color: Color(0xFFD31A21), size: 14),
+                            ],
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      
                       // Row 1
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildActionIcon(context, Icons.folder_special, 'Vault', '/portfolio'),
-                          _buildActionIcon(context, Icons.model_training, 'Training', '/training'),
-                          _buildActionIcon(context, Icons.computer, 'eLearning', '/elearning'),
+                          _buildMockupAction(context, Icons.business_center, 'My Portfolio', '/portfolio'),
+                          _buildMockupAction(context, Icons.format_list_bulleted, 'Training Log', '/training'),
+                          _buildMockupAction(context, Icons.ondemand_video, 'E-Learning', '/elearning'),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      // Row 2 (Balanced with a spacer)
+                      const SizedBox(height: 16),
+                      // Row 2
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildActionIcon(context, Icons.assessment, 'CPD', '/cpd'),
-                          _buildActionIcon(context, Icons.forum, 'Forum', '/forum'),
-                          // Invisible placeholder to keep the alignment identical to Row 1
-                          const SizedBox(width: 70, height: 70), 
+                          _buildMockupAction(context, Icons.stars, 'CPD Records', '/cpd'),
+                          _buildMockupAction(context, Icons.document_scanner, 'Resume Builder AI', ''),
+                          _buildMockupAction(context, Icons.forum, 'Discussion Forum', '/forum'),
                         ],
                       ),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 30),
 
                 // ==========================================
                 // SECTION 3: AI RESUME BUILDER BANNER
                 // ==========================================
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(22),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF283593), Color(0xFF3949AB)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: const Color(0xFFFFF0F0), // Light pink/red background
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5)),
-                      ],
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.auto_awesome, color: Colors.white, size: 40),
-                        const SizedBox(width: 20),
                         Expanded(
+                          flex: 3,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
-                                'AI Resume Builder',
-                                style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            children: [
+                              const Text(
+                                'Build your professional profile with AI Resume Builder.',
+                                style: TextStyle(color: Colors.black87, fontSize: 15, fontWeight: FontWeight.bold, height: 1.3),
                               ),
-                              SizedBox(height: 6),
-                              Text(
-                                'Generate a professional CV instantly',
-                                style: TextStyle(color: Colors.white70, fontSize: 13),
+                              const SizedBox(height: 12),
+                              ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFFD31A21),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                  elevation: 0,
+                                ),
+                                child: const Text('Try Now', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                               ),
                             ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          flex: 2,
+                          child: Container(
+                            height: 80,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFD31A21),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.description, color: Colors.white, size: 36),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
+                
+                // Extra space at bottom to account for standard scrolling
                 const SizedBox(height: 40),
               ],
             ),
@@ -228,30 +337,46 @@ class DashboardScreen extends StatelessWidget {
   }
 
   // ---------------------------------------------------------------------------
-  // HELPER WIDGET: ACTION ICON BUILDER
+  // HELPER WIDGET: MOCKUP ACTION CARD
   // ---------------------------------------------------------------------------
-  Widget _buildActionIcon(BuildContext context, IconData icon, String label, String route) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
-      child: Column(
-        children: [
-          Container(
-            height: 70,
-            width: 70,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: const [
-                BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
-              ],
-            ),
-            child: Icon(icon, color: const Color(0xFFC62828), size: 32),
+  Widget _buildMockupAction(BuildContext context, IconData icon, String label, String route) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          if (route.isNotEmpty) {
+            Navigator.pushNamed(context, route);
+          } else {
+             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Module coming soon!")));
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.withOpacity(0.2)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02), 
+                blurRadius: 5, 
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: const Color(0xFFD31A21), size: 32),
+              const SizedBox(height: 10),
+              Text(
+                label, 
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black87),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

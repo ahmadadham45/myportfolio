@@ -43,9 +43,15 @@ class TrainingScreen extends StatelessWidget {
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
-        itemCount: trainings.length,
+        // We add 1 to the length to make room for the video placeholder at the top
+        itemCount: trainings.length + 1,
         itemBuilder: (context, index) {
-          final item = trainings[index];
+          // If it's the very first item, show the video placeholder
+          if (index == 0) {
+            return _buildVideoPlaceholder();
+          }
+          // Otherwise, show the training cards (offset index by 1)
+          final item = trainings[index - 1];
           return _buildTrainingCard(item);
         },
       ),
@@ -59,6 +65,85 @@ class TrainingScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFC62828),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: const Icon(Icons.add, color: Colors.white, size: 30),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // HELPER WIDGET: VIDEO PLACEHOLDER
+  // ---------------------------------------------------------------------------
+  Widget _buildVideoPlaceholder() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24), // Space between video and first training card
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 15, offset: const Offset(0, 8)),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Dark background representing the unloaded video
+            Container(
+              height: 210,
+              width: double.infinity,
+              color: const Color(0xFF1E1E1E),
+              child: const Icon(Icons.ondemand_video, size: 80, color: Colors.white12),
+            ),
+            // Gradient overlay for text readability
+            Container(
+              height: 210,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.85)],
+                ),
+              ),
+            ),
+            // Play Button
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFC62828).withOpacity(0.95),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: const Color(0xFFC62828).withOpacity(0.4), blurRadius: 10, spreadRadius: 2),
+                ],
+              ),
+              child: const Icon(Icons.play_arrow, color: Colors.white, size: 40),
+            ),
+            // Video Title and Duration Text
+            Positioned(
+              bottom: 16,
+              left: 20,
+              right: 20,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Intro RPEL/APEL & How To Use MyPortfolio',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, height: 1.3),
+                  ),
+                  SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(Icons.timer, color: Colors.white70, size: 14),
+                      SizedBox(width: 4),
+                      Text(
+                        '5 mins • Required Viewing',
+                        style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

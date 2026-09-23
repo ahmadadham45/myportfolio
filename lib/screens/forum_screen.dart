@@ -1,78 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ForumScreen extends StatelessWidget {
   const ForumScreen({super.key});
 
+  Future<void> _launchURL(BuildContext context, String url) async {
+    final Uri uri = Uri.parse(url);
+    try {
+      if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+        throw Exception('Could not launch $url');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not open the community link. Please check your connection.")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // DefaultTabController is required to manage the state of the tabs
+    // DefaultTabController automatically manages the tab state for us
     return DefaultTabController(
-      length: 2, // We have 2 tabs: WhatsApp and Telegram
+      length: 3, // Number of tabs
       child: Scaffold(
+        backgroundColor: const Color(0xFFF5F7FA),
         appBar: AppBar(
           title: const Text('Community Groups'),
-          elevation: 1,
-          backgroundColor: const Color(0xFFC62828), // The red theme
+          backgroundColor: const Color(0xFFC62828),
+          elevation: 0,
           // The TabBar sits at the bottom of the AppBar
           bottom: const TabBar(
             indicatorColor: Colors.white,
-            indicatorWeight: 3.0,
+            indicatorWeight: 4,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70,
+            unselectedLabelColor: Colors.white60,
             tabs: [
-              Tab(
-                icon: Icon(Icons.chat), // Generic chat icon for WhatsApp
-                text: 'WhatsApp',
-              ),
-              Tab(
-                icon: Icon(Icons.send), // Generic send icon for Telegram
-                text: 'Telegram',
-              ),
+              Tab(icon: Icon(Icons.chat), text: 'WhatsApp'),
+              Tab(icon: Icon(Icons.send), text: 'Telegram'),
+              Tab(icon: Icon(Icons.share), text: 'Others'),
             ],
           ),
         ),
-        // TabBarView contains the actual screens for each tab.
-        // The order here must match the order of the Tabs above.
+        // TabBarView contains the actual screens for each tab in order
         body: TabBarView(
           children: [
-            // --- TAB 1: WHATSAPP ---
-            _buildPlatformList(
-              context,
-              platformName: 'WhatsApp',
-              iconColor: Colors.green,
-              platformIcon: Icons.chat,
-              groups: [
-                {
-                  'title': 'APEL.C Preparation Group',
-                  'desc': 'Discussion for compiling experiential learning portfolios and sharing evidence templates.',
-                  'members': '128 Members',
-                },
-                {
-                  'title': 'CDCS230 Study Group',
-                  'desc': 'General discussion and peer support for computer science subjects.',
-                  'members': '56 Members',
-                },
-              ],
+            // ==========================================
+            // TAB 1: WHATSAPP
+            // ==========================================
+            _buildTabContent(
+              context: context,
+              title: 'MyPortfolio Innovation',
+              subtitle: 'Official WhatsApp Channel\nGet the latest APEL/RPEL updates directly on WhatsApp.',
+              icon: Icons.chat,
+              color: const Color(0xFF25D366),
+              url: 'https://whatsapp.com/channel/0029VbE4s71IN9ifgZXNVq1g',
             ),
 
-            // --- TAB 2: TELEGRAM ---
-            _buildPlatformList(
-              context,
-              platformName: 'Telegram',
-              iconColor: Colors.blue,
-              platformIcon: Icons.send,
-              groups: [
-                {
-                  'title': 'MQA Official Announcements',
-                  'desc': 'One-way channel for the latest updates on APEL guidelines and CPD requirements.',
-                  'members': '2.5k Subscribers',
-                },
-                {
-                  'title': 'Dev Community Malaysia',
-                  'desc': 'Networking and professional development events for IT professionals.',
-                  'members': '8.2k Members',
-                },
-              ],
+            // ==========================================
+            // TAB 2: TELEGRAM
+            // ==========================================
+            _buildTabContent(
+              context: context,
+              title: 'MyPortfolio Innovation',
+              subtitle: 'Official Telegram Channel\nJoin the discussion and share resources with peers.',
+              icon: Icons.send,
+              color: const Color(0xFF0088cc),
+              url: 'https://t.me/+47T1XAEk9yxlOGZl',
+            ),
+
+            // ==========================================
+            // TAB 3: OTHERS (FUTURE DEVELOPMENT)
+            // ==========================================
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.public, size: 64, color: Colors.grey[400]),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'More Platforms Coming Soon',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey[700]),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Future updates will include additional\nsocial media channels.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14, color: Colors.blueGrey[400], height: 1.4),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -80,90 +103,80 @@ class ForumScreen extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // HELPER WIDGET: PLATFORM LIST BUILDER
-  // Builds a standardized list of external links for whichever tab is active.
-  // ---------------------------------------------------------------------------
-  Widget _buildPlatformList(
-    BuildContext context, {
-    required String platformName,
-    required Color iconColor,
-    required IconData platformIcon,
-    required List<Map<String, String>> groups,
+  // Helper widget to build the content inside the active tabs
+  Widget _buildTabContent({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required String url,
   }) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: groups.length,
-      itemBuilder: (context, index) {
-        final group = groups[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 16.0),
-          elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () {
-              // In the final app, you would use the 'url_launcher' package here
-              // to actually open the WhatsApp or Telegram link.
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Redirecting to ${group['title']} on $platformName...'),
-                  backgroundColor: iconColor,
-                ),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Join the Conversation',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF2C3E50)),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap the card below to open the external application and join the community group.',
+            style: TextStyle(fontSize: 15, color: Colors.blueGrey[600], height: 1.4),
+          ),
+          const SizedBox(height: 32),
+          InkWell(
+            onTap: () => _launchURL(context, url),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.15),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+                border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+              ),
               child: Row(
                 children: [
-                  // Platform Icon Indicator
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.1),
+                      color: color,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(platformIcon, color: iconColor, size: 28),
+                    child: Icon(icon, color: Colors.white, size: 36),
                   ),
-                  const SizedBox(width: 16),
-                  // Group Details
+                  const SizedBox(width: 20),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(
-                          group['title']!,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Text(
+                          title,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50)),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          group['desc']!,
-                          style: TextStyle(color: Colors.grey[700], fontSize: 13),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          group['members']!,
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          subtitle,
+                          style: TextStyle(fontSize: 13, color: Colors.blueGrey[600], height: 1.3),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  // External Link Icon to show it leaves the app
-                  Icon(Icons.open_in_new, color: Colors.grey[400]),
                 ],
               ),
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
